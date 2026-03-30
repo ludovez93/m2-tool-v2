@@ -310,10 +310,24 @@ textarea::placeholder{color:var(--w3)}
 .btn-pdf::before{display:none}
 .btn-pdf:active{opacity:0.8;transform:scale(0.96)}
 
-/* ── New Scheda Button (from screen3 mockup) ── */
-.btn-new-scheda{width:100%;padding:15px;border-radius:9999px;font-family:var(--sans);font-size:14px;font-weight:700;color:#555;cursor:pointer;background:rgba(255,255,255,0.02);border:1.5px dashed rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;min-height:50px}
-.btn-new-scheda::before{display:none}
-.btn-new-scheda:active{transform:scale(0.97);background:rgba(10,132,255,0.04);border-color:rgba(10,132,255,0.15);color:var(--ac)}
+/* ── Mockup screen3: Hero, Severity, Buttons ── */
+.hero{padding:16px 18px}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.hero-title{font-size:15px;font-weight:800;letter-spacing:-0.2px;color:#888}
+.hero-count{display:flex;align-items:baseline;gap:5px}
+.hero-num{font-family:var(--mono);font-size:26px;font-weight:800;color:var(--rd);line-height:1;text-shadow:0 0 16px rgba(255,68,68,0.4)}
+.hero-label{font-size:10px;color:#555;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.severity{display:flex;gap:6px;margin-top:10px}
+.sev-chip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 14px;border-radius:10px;font-size:10px;font-weight:600;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);flex:1;text-align:center}
+.sev-chip.crit{color:var(--rd)}
+.sev-chip.warn{color:var(--yl)}
+.sev-count{font-family:var(--mono);font-weight:800;font-size:20px;line-height:1;text-shadow:0 0 16px currentColor}
+.btn-all{width:100%;padding:12px;border-radius:9999px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ac);cursor:pointer;background:rgba(10,132,255,0.06);border:1px solid rgba(10,132,255,0.12);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;margin-bottom:16px}
+.btn-all:active{transform:scale(0.97);background:rgba(10,132,255,0.1)}
+.btn-all svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-new,.btn-new-scheda{width:100%;padding:15px;border-radius:9999px;font-family:var(--sans);font-size:14px;font-weight:700;color:#555;cursor:pointer;background:rgba(255,255,255,0.02);border:1.5px dashed rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.btn-new svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.btn-new:active,.btn-new-scheda:active{transform:scale(0.97);background:rgba(10,132,255,0.04);border-color:rgba(10,132,255,0.15);color:var(--ac)}
 
 /* ── Empty State ── */
 .empty-state{text-align:center;padding:48px 24px}
@@ -557,34 +571,45 @@ textarea::placeholder{color:var(--w3)}
 
   </div>
 
-  <!-- PANEL 2: DIFETTI -->
+  <!-- PANEL 2: DIFETTI (mockup screen3) -->
   <div class="tab-panel" id="panel-2">
 
-    <div class="difetti-hero" id="difetti-hero">
-      <div class="difetti-hero-top">
-        <div class="difetti-hero-title">Difetti</div>
-        <div class="difetti-counter">
-          <div class="difetti-counter-num" id="difetti-counter-num">0</div>
-          <div class="difetti-counter-label">rilevati</div>
+    <!-- Hero -->
+    <div class="card" id="difetti-hero">
+      <div class="hero">
+        <div class="hero-top difetti-hero-top">
+          <span class="hero-title difetti-hero-title">Difetti</span>
+          <div class="hero-count difetti-counter">
+            <span class="hero-num difetti-counter-num" id="difetti-counter-num">0</span>
+            <span class="hero-label difetti-counter-label">rilevati</span>
+          </div>
         </div>
-      </div>
-      <div class="difetti-hero-sub" id="difetti-hero-sub">Nessun difetto trovato</div>
-      <div class="difetti-severity" id="difetti-severity">
-        <div class="severity-chip critical"><div class="severity-dot"></div>Codice <span class="severity-count" id="sev-critical">0</span></div>
-        <div class="severity-chip warning"><div class="severity-dot"></div>NO DAC <span class="severity-count" id="sev-warning">0</span></div>
-        <div class="severity-chip ok"><div class="severity-dot"></div>OK <span class="severity-count" id="sev-ok">0</span></div>
+        <div class="difetti-hero-sub" id="difetti-hero-sub" style="font-size:12px;color:#555;margin-top:6px">Nessun difetto trovato</div>
+        <div class="severity difetti-severity" id="difetti-severity">
+          <div class="sev-chip crit severity-chip critical"><span class="sev-count severity-count" id="sev-critical">0</span>Difetti</div>
+          <div class="sev-chip warn severity-chip warning"><span class="sev-count severity-count" id="sev-warning">0</span>No Dac</div>
+          <div class="severity-chip ok" style="display:none"><span class="severity-count" id="sev-ok">0</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <button class="btn-new-scheda" onclick="apriSchedaVuota()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuova Scheda
-      </button>
-    </div>
+    <!-- Scarica tutti i PDF -->
+    <button class="btn-all" id="btn-scarica-tutti" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Scarica tutti i PDF
+    </button>
+
+    <!-- Difetti generati dal JS -->
     <div id="difetti-wrap">
-      <div class="empty-state"><div class="empty-icon">&#x2713;</div><div class="empty-text">Nessun difetto rilevato.</div></div>
+      <div class="empty-state"><div class="empty-icon">—</div><div class="empty-text">Nessun difetto rilevato.</div></div>
     </div>
+
+    <!-- Nuova Scheda (in fondo come nel mockup) -->
+    <button class="btn-new" onclick="apriSchedaVuota()" style="margin-top:14px">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuova Scheda
+    </button>
+
   </div>
 
 </div>
