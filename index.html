@@ -104,16 +104,19 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .et-clear:active{background:rgba(255,69,58,0.06);color:#FF453A}
 .et-clear svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
-/* Editor wrap: contains both textarea and preview overlay */
+/* Editor wrap: textarea OR preview (not overlapped) */
 .editor-wrap{position:relative;min-height:280px}
 
-/* Textarea: transparent text, user types/pastes here */
-.editor-textarea{width:100%;height:100%;background:transparent;border:none;color:transparent;caret-color:var(--ac);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px 14px 33px;resize:none;outline:none;min-height:340px;position:absolute;top:0;left:0;z-index:2;margin:0;-webkit-appearance:none;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word}
-.editor-textarea::placeholder{color:transparent}
+/* Textarea: normal visible input */
+.editor-textarea{width:100%;background:transparent;border:none;color:#b8b8be;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:340px;margin:0;-webkit-appearance:none;display:block}
+.editor-textarea::placeholder{color:var(--w3)}
 .editor-textarea::-webkit-scrollbar{display:none}
+/* When preview is shown, hide textarea */
+.editor-wrap.has-preview .editor-textarea{display:none}
 
-/* Editor body: colored preview, sits below textarea */
-.editor-body{padding:14px 18px;min-height:340px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;position:relative;z-index:1;pointer-events:none;white-space:pre-wrap;word-wrap:break-word}
+/* Editor body: colored preview (shown when textarea loses focus and has content) */
+.editor-body{padding:14px 18px;min-height:340px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;display:none;cursor:text}
+.editor-wrap.has-preview .editor-body{display:block}
 .el{display:flex;align-items:center;gap:0;padding:1px 0}
 .el-bar{width:3px;min-height:20px;border-radius:1.5px;margin-right:12px;flex-shrink:0;transition:background 0.3s}
 .el-bar.meta{background:rgba(255,255,255,0.08)}
@@ -1918,16 +1921,32 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
     }
   }
 
-  // Textarea is always interactive (transparent text on top, preview below)
-  ta.addEventListener('input', renderPreview);
-  ta.addEventListener('change', renderPreview);
-  ta.addEventListener('paste', function(){ setTimeout(renderPreview, 10); });
+  const wrap = ta.closest('.editor-wrap');
 
-  // Override clear to also update preview
+  function showPreview(){
+    if(ta.value.trim()){
+      renderPreview();
+      wrap.classList.add('has-preview');
+    }
+  }
+  function showTextarea(){
+    wrap.classList.remove('has-preview');
+    ta.focus();
+  }
+
+  // When textarea loses focus → show colored preview
+  ta.addEventListener('blur', function(){ setTimeout(showPreview, 150); });
+  // When preview is clicked → back to textarea
+  preview.addEventListener('click', showTextarea);
+  // Update preview on input (for live strip counts)
+  ta.addEventListener('input', renderPreview);
+  ta.addEventListener('paste', function(){ setTimeout(function(){ renderPreview(); showPreview(); }, 50); });
+
+  // Override clear to reset to textarea
   const origClear = document.getElementById('btn-clear');
   if(origClear){
     origClear.addEventListener('click', function(){
-      setTimeout(renderPreview, 50);
+      setTimeout(function(){ wrap.classList.remove('has-preview'); renderPreview(); }, 50);
     });
   }
 
