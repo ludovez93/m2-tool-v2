@@ -1583,7 +1583,7 @@ function apriSchedaVuota() {
   setTimeout(updScheda, 50);
 }
 function aggiornaSchedaTitolo(s) {
-  var title = s.codice ? ('Difetto ' + s.codice) : (s.stato==='nodac' ? 'NO DAC' : 'Scheda I.1');
+  var title = s.stato==='nodac' ? ('NO DAC' + (s.codice ? ' ' + s.codice : '')) : s.codice ? ('Difetto ' + s.codice) : 'Scheda I.1';
   document.getElementById('se-title').textContent = title;
   var sub = document.getElementById('se-subtitle');
   var parts = [];
@@ -1840,7 +1840,7 @@ const SCHEDA_FIELDS = ["scheda_nr","linea","localita","tratta","km","sede","data
 
 function autoSaveScheda() {
   if(currentDifettoIdx === null) return;
-  var data = {idx: currentDifettoIdx, pills: {}, fields: {}};
+  var data = {idx: currentDifettoIdx, pills: {}, fields: {}, km: saldature[currentDifettoIdx]?.km || ''};
   SCHEDA_FIELDS.forEach(function(id) {
     var el = document.getElementById(id);
     if(el) data.fields[id] = el.value;
@@ -1854,6 +1854,12 @@ function loadSchedaSaved(idx) {
     var raw = localStorage.getItem('m2_scheda_' + idx);
     if(!raw) return false;
     var data = JSON.parse(raw);
+    // Verifica che i dati salvati corrispondano alla saldatura corrente
+    var s = saldature[idx];
+    if(s && data.fields && data.fields.km !== s.km) {
+      localStorage.removeItem('m2_scheda_' + idx);
+      return false;
+    }
     if(data.fields) {
       Object.keys(data.fields).forEach(function(id) {
         var el = document.getElementById(id);
