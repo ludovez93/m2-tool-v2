@@ -108,12 +108,12 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .editor-wrap{position:relative;min-height:280px}
 
 /* Textarea: transparent text, user types/pastes here */
-.editor-textarea{width:100%;height:100%;background:transparent;border:none;color:transparent;caret-color:var(--ac);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:280px;position:absolute;top:0;left:0;z-index:2}
+.editor-textarea{width:100%;height:100%;background:transparent;border:none;color:transparent;caret-color:var(--ac);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:340px;position:absolute;top:0;left:0;z-index:2}
 .editor-textarea::placeholder{color:transparent}
 .editor-textarea::-webkit-scrollbar{display:none}
 
 /* Editor body: colored preview, sits below textarea */
-.editor-body{padding:14px 18px;min-height:280px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;position:relative;z-index:1;pointer-events:none}
+.editor-body{padding:14px 18px;min-height:340px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;position:relative;z-index:1;pointer-events:none}
 .el{display:flex;align-items:center;gap:0;padding:1px 0}
 .el-bar{width:3px;min-height:20px;border-radius:1.5px;margin-right:12px;flex-shrink:0;transition:background 0.3s}
 .el-bar.meta{background:rgba(255,255,255,0.08)}
@@ -156,7 +156,7 @@ textarea::placeholder{color:var(--w3)}
 .ef-hint svg,.input-hint svg{width:13px;height:13px;stroke:#444;fill:none;stroke-width:2;stroke-linecap:round;opacity:0.5}
 
 /* ── CTA Button (from screen1 mockup) ── */
-.cta,.btn-primary{width:100%;margin-top:0;padding:14px 20px;border:none;border-radius:9999px;font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:-0.1px;color:#fff;cursor:pointer;background:#0A84FF;box-shadow:0 4px 16px rgba(10,132,255,0.3),0 0 0 1px rgba(10,132,255,0.2);transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
+.cta,.btn-primary{width:100%;margin-top:16px;padding:14px 20px;border:none;border-radius:9999px;font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:-0.1px;color:#fff;cursor:pointer;background:#0A84FF;box-shadow:0 4px 16px rgba(10,132,255,0.3),0 0 0 1px rgba(10,132,255,0.2);transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
 .cta:active,.btn-primary:active{transform:scale(0.97);opacity:0.85}
 .cta::before,.btn-primary::before{display:none}
 .btn-secondary{padding:14px 20px;font-size:15px;font-weight:700;border-radius:9999px;min-height:50px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--w2);font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
@@ -174,7 +174,6 @@ textarea::placeholder{color:var(--w3)}
 /* ── Stats (from screen2 mockup) ── */
 .stats-card{padding:16px 18px}
 .stats,.stats-bar{display:flex;gap:6px;margin-bottom:12px}
-.stats,.stats-bar{display:flex;gap:6px}
 .stat,.stat-card{flex:1;padding:10px 0;background:rgba(255,255,255,0.018);border:1px solid rgba(255,255,255,0.05);border-radius:12px;position:relative;overflow:hidden;text-align:center;animation:countUp 0.5s ease both;border-left:none}
 .stat::before,.stat-card::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;border-radius:1px}
 .stat-card::after{display:none}
@@ -200,10 +199,7 @@ textarea::placeholder{color:var(--w3)}
 .progress-fill,.risultati-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#4ade80,var(--ac));transition:width 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
 .progress-labels,.risultati-progress-label{display:flex;justify-content:space-between;margin-top:8px}
 .progress-labels span,.risultati-progress-label span{font-family:var(--mono);font-size:11px;font-weight:600;color:#555}
-.risultati-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#4ade80,var(--ac));transition:width 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
 .risultati-progress-fill::after{display:none}
-.risultati-progress-label{display:flex;justify-content:space-between;margin-top:8px}
-.risultati-progress-label span{font-family:var(--mono);font-size:11px;font-weight:600;color:#555}
 
 /* ── Result List (from screen2 mockup) ── */
 .result-list{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);position:relative}
@@ -302,6 +298,7 @@ textarea::placeholder{color:var(--w3)}
 /* ── Difetto Cards (from screen3 mockup + V1 compat) ── */
 .difetto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;animation:slideUp 0.4s ease both;position:relative;box-shadow:var(--shadow)}
 .difetto-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,#ff6b6b,rgba(255,69,58,0.3));border-radius:3px 0 0 3px}
+.difetto-card.nodac-card::before{background:linear-gradient(180deg,#fde047,rgba(255,214,10,0.3))}
 .difetto-header{padding:14px 18px;background:linear-gradient(135deg,rgba(255,69,58,0.04),transparent);border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
 .difetto-title{font-size:14px;font-weight:700;color:var(--rd);display:flex;align-items:center;gap:8px}
 .difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;flex-shrink:0;box-shadow:0 0 8px rgba(255,69,58,0.5);animation:breathe 3s ease-in-out infinite}
@@ -499,9 +496,9 @@ textarea::placeholder{color:var(--w3)}
         <div class="ls-dot"></div>
         <span class="ls-text" id="ls-text">0 saldature</span>
         <div class="ls-chips">
-          <span class="ls-chip g"><span class="ls-chip-dot"></span> <span id="ls-ok">0</span></span>
-          <span class="ls-chip r"><span class="ls-chip-dot"></span> <span id="ls-diff">0</span></span>
-          <span class="ls-chip y"><span class="ls-chip-dot"></span> <span id="ls-nd">0</span></span>
+          <span class="ls-chip g"><span class="ls-chip-dot"></span> <span id="ls-ok">0</span> Conformi</span>
+          <span class="ls-chip r"><span class="ls-chip-dot"></span> <span id="ls-diff">0</span> Difetti</span>
+          <span class="ls-chip y"><span class="ls-chip-dot"></span> <span id="ls-nd">0</span> No Dac</span>
         </div>
       </div>
 
@@ -816,7 +813,7 @@ textarea::placeholder{color:var(--w3)}
       </div>
       <div class="sig-actions">
         <button type="button" class="sig-btn danger" onclick="clearSig()">Cancella</button>
-        <button type="button" class="sig-btn" onclick="salvaSig()">Salva firma</button>
+        <button type="button" class="sig-btn primary" onclick="salvaSig()">Salva firma</button>
         <label class="sig-btn" style="cursor:pointer">Carica da galleria<input type="file" id="sig-upload" accept="image/*" style="display:none" onchange="loadSig(this)"></label>
       </div>
       <div class="fgroup" style="margin-top:10px"><label>FIRME SALVATE</label></div>
@@ -1303,6 +1300,11 @@ function aggiornaUI() {
     }</div></div>`;
   }
   dw.innerHTML=html;
+  // Applica classe nodac-card alle card NO DAC (per bordo giallo)
+  dw.querySelectorAll('.difetto-card').forEach(function(card){
+    var title = card.querySelector('.difetto-title');
+    if(title && title.style.color === 'var(--yl)') card.classList.add('nodac-card');
+  });
 }
 
 
