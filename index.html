@@ -217,19 +217,19 @@ textarea::placeholder{color:var(--w3)}
 .toast-sub{font-size:11px;color:#555;font-weight:500}
 
 /* ── Hero Cards (V1 compat + screen3 mockup) ── */
-.compila-hero,.risultati-hero,.difetti-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.compila-hero::before,.risultati-hero::before,.difetti-hero::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);pointer-events:none;z-index:1}
-.compila-hero::after{display:none}
-.compila-hero>*,.risultati-hero>*,.difetti-hero>*{position:relative;z-index:1}
+.compila-hero{display:none}
+.risultati-hero,.difetti-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.risultati-hero::before,.difetti-hero::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);pointer-events:none;z-index:1}
+.risultati-hero>*,.difetti-hero>*{position:relative;z-index:1}
 
-.hero-status{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.hero-status{display:none}
 .hero-status-dot{width:5px;height:5px;border-radius:50%;background:#30D158;box-shadow:0 0 8px rgba(48,209,88,0.7);animation:breathe 3s ease-in-out infinite}
 .hero-status-text{font-size:10px;font-weight:600;color:rgba(48,209,88,0.8);text-transform:uppercase;letter-spacing:0.5px}
 .hero-title{font-size:20px;font-weight:800;letter-spacing:-0.3px;line-height:1.2;margin-bottom:4px;color:var(--w)}
 .hero-subtitle{font-size:13px;color:var(--w2);line-height:1.5}
 
 /* Flow steps (V1 compat for JS) */
-.flow-steps{display:flex;align-items:center;gap:0;margin-bottom:16px;padding:0 4px}
+.flow-steps{display:none}
 .flow-step{display:flex;align-items:center;gap:8px;flex:1}
 .flow-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:rgba(255,255,255,0.02);color:var(--w3);border:1.5px solid var(--border);transition:all 0.3s;flex-shrink:0}
 .flow-step.active .flow-num{background:var(--acbg);color:var(--ac);border-color:rgba(10,132,255,0.4);box-shadow:var(--glow-ac)}
@@ -242,7 +242,7 @@ textarea::placeholder{color:var(--w3)}
 .flow-line.lit::after{transform:scaleX(1)}
 
 /* Risultati hero (V1 compat) */
-.risultati-hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.risultati-hero-top{display:none}
 .risultati-hero-title{font-size:15px;font-weight:800;color:#888;letter-spacing:-0.2px}
 .risultati-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;background:var(--gn-bg);color:var(--gn);letter-spacing:0.5px;border:1px solid rgba(34,255,119,0.15)}
 .risultati-badge.has-issues{background:var(--rd-bg);color:var(--rd);border-color:rgba(255,68,68,0.15)}
@@ -252,7 +252,7 @@ textarea::placeholder{color:var(--w3)}
 .severity-chip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 14px;border-radius:10px;font-size:10px;font-weight:600;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);flex:1;text-align:center}
 .severity-chip.critical{color:var(--rd)}
 .severity-chip.warning{color:var(--yl)}
-.severity-chip.ok{color:var(--gn)}
+.severity-chip.ok{display:none}
 .severity-count{font-family:var(--mono);font-weight:800;font-size:20px;line-height:1;text-shadow:0 0 16px currentColor}
 .severity-dot{display:none}
 
