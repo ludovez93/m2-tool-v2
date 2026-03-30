@@ -224,9 +224,13 @@ textarea::placeholder{color:var(--w3)}
 .tag-bin{background:rgba(255,255,255,0.04);color:#555}
 
 /* PDF button on result rows */
-.result-row .btn-pdf{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ac);background:var(--acbg);border:none;padding:4px 10px;border-radius:6px;cursor:pointer;flex-shrink:0;transition:all 0.15s;box-shadow:none;min-height:auto}
-.result-row .btn-pdf::before{display:none}
-.result-row .btn-pdf:active{transform:scale(0.95);opacity:0.8}
+.rrow-pdf{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ac);background:var(--acbg);border:none;padding:4px 10px;border-radius:6px;cursor:pointer;flex-shrink:0;transition:all 0.15s}
+.rrow-pdf:active{transform:scale(0.95);opacity:0.8}
+
+/* Expanded row details */
+.rrow-expand{padding:0 18px 10px 50px;border-bottom:1px solid var(--sep);display:flex;flex-wrap:wrap;gap:4px 14px}
+.rrow-expand-item{font-size:11px;color:#555}
+.rrow-expand-item strong{color:#888;font-weight:600;margin-right:4px}
 
 /* ── TSV (from screen2 mockup) ── */
 .tsv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);position:relative}
@@ -299,6 +303,7 @@ textarea::placeholder{color:var(--w3)}
 .difetto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;animation:slideUp 0.4s ease both;position:relative;box-shadow:var(--shadow)}
 .difetto-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,#ff6b6b,rgba(255,69,58,0.3));border-radius:3px 0 0 3px}
 .difetto-card.nodac-card::before{background:linear-gradient(180deg,#fde047,rgba(255,214,10,0.3))}
+.difetto-card.nodac-card .difetto-title::before{background:var(--yl);box-shadow:0 0 8px rgba(255,214,10,0.5)}
 .difetto-header{padding:14px 18px;background:linear-gradient(135deg,rgba(255,69,58,0.04),transparent);border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
 .difetto-title{font-size:14px;font-weight:700;color:var(--rd);display:flex;align-items:center;gap:8px}
 .difetto-title::before{content:'';width:6px;height:6px;background:var(--rd);border-radius:50%;flex-shrink:0;box-shadow:0 0 8px rgba(255,69,58,0.5);animation:breathe 3s ease-in-out infinite}
@@ -1277,8 +1282,18 @@ function aggiornaUI() {
   if (!tot) { rl.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Nessuna saldatura elaborata.<br>Vai su Compila e premi Elabora.</div></div>'; }
   else rl.innerHTML = saldature.map((s,i)=>{
     const cls=s.stato==='diff'?'has-defect':s.stato==='nodac'?'has-nodac':'';
-    const tStato=s.stato==='ok'?'<span class="tag tag-ok">OK</span>':s.stato==='nodac'?'<span class="tag tag-nodac">NO DAC</span>':`<span class="tag tag-diff">${s.codice}</span>`;
-    return `<div class="result-row ${cls}" style="animation-delay:${i*0.05}s"><span class="row-index">${String(i+1).padStart(2,'0')}</span><span class="row-km">${s.km}</span><span class="row-type">${s.tipo}</span><div class="row-tags">${s.fila?`<span class="tag tag-bin">${s.fila}</span>`:''}${tStato}</div></div>`;
+    const tStato=s.stato==='ok'?'<span class="tag tag-ok">OK</span>':s.stato==='nodac'?'<span class="tag tag-nodac">ND</span>':`<span class="tag tag-diff">${s.codice}</span>`;
+    const pdfBtn=(s.stato==='diff'||s.stato==='nodac')?`<button class="rrow-pdf" onclick="apriModal(${i})">PDF</button>`:'';
+    let row=`<div class="result-row ${cls}" style="animation-delay:${i*0.05}s${(s.stato!=='ok')?';border-bottom:none':''}"><span class="row-index">${String(i+1).padStart(2,'0')}</span><span class="row-km">${s.km}</span><span class="row-type">${s.tipo}</span><div class="row-tags">${s.fila?`<span class="tag tag-bin">${s.fila}</span>`:''}${tStato}</div>${pdfBtn}</div>`;
+    if(s.stato!=='ok'){
+      const details=[];
+      if(s.data) details.push(`<div class="rrow-expand-item"><strong>Data</strong> ${s.data}</div>`);
+      if(s.fila) details.push(`<div class="rrow-expand-item"><strong>Fila</strong> ${s.fila}</div>`);
+      if(s.classif) details.push(`<div class="rrow-expand-item"><strong>Classif.</strong> ${s.classif}</div>`);
+      if(s.note) details.push(`<div class="rrow-expand-item"><strong>Note</strong> ${s.note}</div>`);
+      if(details.length) row+=`<div class="rrow-expand">${details.join('')}</div>`;
+    }
+    return row;
   }).join('');
 
   generaTSV();
