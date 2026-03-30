@@ -1273,6 +1273,12 @@ document.getElementById('qa-last').addEventListener('click', () => {
 });
 
 document.getElementById('btn-elabora').addEventListener('click', () => {
+  // Sync contenteditable → textarea prima di parsare
+  const ce = document.getElementById('editor-preview');
+  if(ce && ce.textContent.trim()) {
+    const ta = document.getElementById('input-lista');
+    if(ta) ta.value = ce.innerText || ce.textContent;
+  }
   const txt = textarea.value;
   if (!txt.trim()) { showToast('Incolla prima la lista saldature', 'info'); return; }
   const btn = document.getElementById('btn-elabora');
@@ -1281,15 +1287,20 @@ document.getElementById('btn-elabora').addEventListener('click', () => {
   btn.textContent = 'Elaborando...';
   btn.style.opacity = '0.6';
   setTimeout(() => {
-    localStorage.setItem('m2_last_input', txt);
-    saldature = parse(txt);
-    aggiornaUI();
-    updateFlowSteps();
-    switchTab(1);
+    try {
+      localStorage.setItem('m2_last_input', txt);
+      saldature = parse(txt);
+      aggiornaUI();
+      updateFlowSteps();
+      switchTab(1);
+      showToast(saldature.length + ' saldature elaborate', 'success', 2500);
+    } catch(e) {
+      showToast('Errore: ' + e.message, 'error', 5000);
+      console.error('Parse/UI error:', e);
+    }
     btn.disabled = false;
     btn.textContent = btn.dataset.origText;
     btn.style.opacity = '';
-    showToast(saldature.length + ' saldature elaborate', 'success', 2500);
   }, 50);
 });
 document.getElementById('btn-clear').addEventListener('click', () => { textarea.value=''; updateCharCounter(); });
