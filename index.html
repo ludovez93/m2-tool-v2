@@ -71,9 +71,11 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .tab.active{color:var(--ac);background:rgba(10,132,255,0.06)}
 .tab.active .tab-icon{filter:drop-shadow(0 0 8px rgba(10,132,255,0.5))}
 .tab:active{opacity:0.6}
-.tab-count{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:5px;font-weight:700;background:rgba(255,255,255,0.04);color:var(--w3);border:none;margin-left:2px}
+.tab-badges{display:flex;gap:4px;align-items:center;height:16px}
+.tab-count{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:5px;font-weight:700;background:rgba(255,255,255,0.04);color:var(--w3);border:none}
 .tab.active .tab-count{background:rgba(10,132,255,0.1);color:var(--ac)}
-.tc-danger{background:var(--rd-bg)!important;color:var(--rd)!important}
+.tc-diff{background:var(--rd-bg)!important;color:var(--rd)!important}
+.tc-nodac{background:var(--yl-bg)!important;color:var(--yl)!important}
 
 /* ── Main Layout ── */
 .main{padding:44px 22px 100px;max-width:100%;position:relative;z-index:1}
@@ -449,9 +451,9 @@ textarea::placeholder{color:var(--w3)}
 
 <!-- Bottom Nav Tabs -->
 <div class="tabs-wrapper">
-  <div class="tab active" data-tab="0"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Compila</span></div>
-  <div class="tab" data-tab="1"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span>Risultati</span><span class="tab-count" id="tc1">0</span></div>
-  <div class="tab" data-tab="2"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Difetti</span><span class="tab-count" id="tc2">0</span></div>
+  <div class="tab active" data-tab="0"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Compila</span><div class="tab-badges" style="visibility:hidden"><span class="tab-count">—</span></div></div>
+  <div class="tab" data-tab="1"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span>Risultati</span><div class="tab-badges"><span class="tab-count" id="tc1">0</span></div></div>
+  <div class="tab" data-tab="2"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Difetti</span><div class="tab-badges" id="tc2-wrap"><span class="tab-count" id="tc2">0</span></div></div>
 </div>
 
 <div class="main">
@@ -1292,13 +1294,13 @@ function aggiornaUI() {
   document.getElementById('s-diff').textContent=diff;
   document.getElementById('s-nodac').textContent=nodac;
   document.getElementById('tc1').textContent=tot||'0';
-  const tc2 = document.getElementById('tc2');
+  const tc2wrap = document.getElementById('tc2-wrap');
   const totalIssues = diff + nodac;
-  if(diff && nodac) tc2.textContent = diff + 'D · ' + nodac + 'ND';
-  else if(diff) tc2.textContent = diff;
-  else if(nodac) tc2.textContent = nodac + ' ND';
-  else tc2.textContent = '0';
-  tc2.classList.toggle('tc-danger', totalIssues > 0);
+  var badgeHtml = '';
+  if(diff) badgeHtml += '<span class="tab-count tc-diff">' + diff + 'D</span>';
+  if(nodac) badgeHtml += '<span class="tab-count tc-nodac">' + nodac + 'ND</span>';
+  if(!totalIssues) badgeHtml = '<span class="tab-count">0</span>';
+  tc2wrap.innerHTML = badgeHtml;
 
   // Risultati Hero
   const pctOk = tot ? Math.round((ok/tot)*100) : 0;
