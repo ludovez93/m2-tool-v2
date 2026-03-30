@@ -1005,18 +1005,23 @@ function parse(txt) {
     const mDevCode = restoUp.match(/\bD\d+[A-Z]?\b/);
     if (mDevCode && !CODICI_DIFETTO.includes(mDevCode[0])) note.push(mDevCode[0]);
 
-    // Punzone: matricola [sigla_ditta] mese anno
-    const mPunzone = resto.match(/\b(\d{3,4})\s+(?:([A-Z]{2,4})\s+)?(\d{1,2})\s+(\d{2,4})\b/i);
-    if (mPunzone && !CODICI_DIFETTO.includes(mPunzone[1])) {
-      extra.punzone = mPunzone[1];
-      if (mPunzone[2]) extra.ditta = mPunzone[2].toUpperCase();
-      const mese = mPunzone[3].padStart(2,'0');
-      const anno = mPunzone[4].length === 2 ? '20' + mPunzone[4] : mPunzone[4];
+    // Punzone: matricola [sigla_ditta] [mese anno]
+    // Formato lungo: "754 CGF 3 26" (punzone ditta mese anno)
+    const mPunzFull = resto.match(/\b(\d{3,4})\s+([A-Z]{2,4})\s+(\d{1,2})\s+(\d{2,4})\b/i);
+    // Formato corto: "754 CGF" (punzone ditta) — solo se dopo ALL/SC
+    const mPunzShort = !mPunzFull ? resto.match(/\b(?:ALL(?:UMINOTERMICA)?|SC(?:INT)?\.?)\s+(?:\d{1,2}\s+)?(\d{3,4})\s+([A-Z]{2,4})\b/i) : null;
+    if (mPunzFull && !CODICI_DIFETTO.includes(mPunzFull[1])) {
+      extra.punzone = mPunzFull[1];
+      extra.ditta = mPunzFull[2].toUpperCase();
+      const mese = mPunzFull[3].padStart(2,'0');
+      const anno = mPunzFull[4].length === 2 ? '20' + mPunzFull[4] : mPunzFull[4];
       extra.data_ese = mese + '/' + anno;
-      let punz = 'PUNZONE ' + mPunzone[1];
-      if (mPunzone[2]) punz += ' ' + mPunzone[2].toUpperCase();
-      punz += ' ' + mPunzone[3] + '/' + mPunzone[4];
+      let punz = 'PUNZONE ' + mPunzFull[1] + ' ' + mPunzFull[2].toUpperCase() + ' ' + mPunzFull[3] + '/' + mPunzFull[4];
       note.push(punz);
+    } else if (mPunzShort && !CODICI_DIFETTO.includes(mPunzShort[1])) {
+      extra.punzone = mPunzShort[1];
+      extra.ditta = mPunzShort[2].toUpperCase();
+      note.push('PUNZONE ' + mPunzShort[1] + ' ' + mPunzShort[2].toUpperCase());
     }
 
     // Difetto visivo sulla riga principale
@@ -1475,6 +1480,7 @@ function apriModal(idx) {
   setVal('punzone', ex.punzone||'');
   setVal('ditta', ex.ditta||'');
   setVal('data_ese', ex.data_ese||'');
+  setVal('data_fin', s.data||'');
   
   // Reset pills
   document.querySelectorAll('#scheda-editor .pill').forEach(p => {
@@ -1505,7 +1511,27 @@ function apriModal(idx) {
   schedaState['rotaia_e1'] = true;
   const pillE1 = document.querySelector('#scheda-editor .pill[data-k="e1"]');
   if(pillE1) { pillE1.classList.add('on'); pillE1.querySelector('.pill-dot').textContent = 'X'; }
-  
+
+  // Default Galileo SI
+  schedaState['galileo_si'] = true;
+  const pillGal = document.querySelector('#scheda-editor .pill[data-g="galileo"][data-k="si"]');
+  if(pillGal) { pillGal.classList.add('on'); pillGal.querySelector('.pill-dot').textContent = 'X'; }
+
+  // Se Alluminotermica + ha punzone ditta → "Saldatura eseguita da DITTA" + Thermit default
+  if(s.tipo === 'Alluminotermica' && ex.ditta) {
+    schedaState['saldatura_ditta'] = true;
+    const pillDitta = document.querySelector('#scheda-editor .pill[data-g="saldatura"][data-k="ditta"]');
+    if(pillDitta) { pillDitta.classList.add('on'); pillDitta.querySelector('.pill-dot').textContent = 'X'; }
+    schedaState['sa_thermit'] = true;
+    const pillTh = document.querySelector('#scheda-editor .pill[data-k="thermit"]');
+    if(pillTh) { pillTh.classList.add('on'); pillTh.querySelector('.pill-dot').textContent = 'X'; }
+  } else {
+    // Default: saldatura RFI
+    schedaState['saldatura_rfi'] = true;
+    const pillRfi = document.querySelector('#scheda-editor .pill[data-g="saldatura"][data-k="rfi"]');
+    if(pillRfi) { pillRfi.classList.add('on'); pillRfi.querySelector('.pill-dot').textContent = 'X'; }
+  }
+
   // Update title
   aggiornaSchedaTitolo(s);
   
