@@ -1786,11 +1786,14 @@ document.getElementById('scheda-editor').addEventListener('change', updScheda);
 })();
 
 
-// ── PWA: offline support ──
+// ── Pulisci service worker vecchio ──
 if("serviceWorker" in navigator){
-  const SW_CODE = `self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open("m2-v4").then(c=>c.addAll(["./"])))});self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!=="m2-v4").map(n=>caches.delete(n)))))});self.addEventListener("fetch",e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))})`;
-  const blob = new Blob([SW_CODE],{type:"application/javascript"});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    for(let r of regs) r.unregister();
+  });
+  caches.keys().then(function(names){
+    for(let n of names) caches.delete(n);
+  });
 }
 
 // ── V2: Editor preview con barre colorate ──
