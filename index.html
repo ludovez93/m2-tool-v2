@@ -104,19 +104,11 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .et-clear:active{background:rgba(255,69,58,0.06);color:#FF453A}
 .et-clear svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
-/* Editor wrap: textarea OR preview (not overlapped) */
-.editor-wrap{position:relative;min-height:280px}
+/* Textarea nascosto per JS compatibility */
+.editor-textarea{position:absolute;left:-9999px;opacity:0;width:0;height:0}
 
-/* Textarea: normal visible input */
-.editor-textarea{width:100%;background:transparent;border:none;color:#b8b8be;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:340px;margin:0;-webkit-appearance:none;display:block}
-.editor-textarea::placeholder{color:var(--w3)}
-.editor-textarea::-webkit-scrollbar{display:none}
-/* When preview is shown, hide textarea */
-.editor-wrap.has-preview .editor-textarea{display:none}
-
-/* Editor body: colored preview (shown when textarea loses focus and has content) */
-.editor-body{padding:14px 18px;min-height:340px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;display:none;cursor:text}
-.editor-wrap.has-preview .editor-body{display:block}
+/* Editor body: contenteditable con barre colorate */
+.editor-body{padding:14px 18px;min-height:340px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;outline:none;cursor:text;-webkit-user-modify:read-write-plaintext-only}
 .el{display:flex;align-items:center;gap:0;padding:1px 0}
 .el-bar{width:3px;min-height:20px;border-radius:1.5px;margin-right:12px;flex-shrink:0;transition:background 0.3s}
 .el-bar.meta{background:rgba(255,255,255,0.08)}
@@ -487,18 +479,16 @@ textarea::placeholder{color:var(--w3)}
         </button>
       </div>
 
-      <div class="editor-wrap">
-        <!-- Textarea trasparente per input -->
-        <textarea id="input-lista" class="editor-textarea" placeholder="Incolla la lista saldature..."></textarea>
-        <!-- Preview colorata sotto -->
-        <div class="editor-body" id="editor-preview">
-          <div class="editor-empty">
-            <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
-            <div class="editor-empty-title">Incolla la lista saldature</div>
-            <div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div>
-          </div>
-        </div><!-- /editor-body -->
-      </div><!-- /editor-wrap -->
+      <!-- Textarea nascosto per JS -->
+      <textarea id="input-lista" class="editor-textarea"></textarea>
+      <!-- Editor contenteditable con barre colorate -->
+      <div class="editor-body" id="editor-preview" contenteditable="true">
+        <div class="editor-empty">
+          <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
+          <div class="editor-empty-title">Incolla la lista saldature</div>
+          <div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div>
+        </div>
+      </div>
 
       <div class="live-strip" id="live-strip" style="display:none">
         <div class="ls-dot"></div>
@@ -1830,19 +1820,18 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
   });
 }
 
-// ── V2: Editor preview con barre colorate ──
+// ── V2: Contenteditable editor con barre colorate ──
 (function(){
   const ta = document.getElementById('input-lista');
-  const preview = document.getElementById('editor-preview');
+  const ce = document.getElementById('editor-preview');
   const liveStrip = document.getElementById('live-strip');
   const lsText = document.getElementById('ls-text');
   const lsOk = document.getElementById('ls-ok');
   const lsDiff = document.getElementById('ls-diff');
   const lsNd = document.getElementById('ls-nd');
-  if(!ta || !preview) return;
+  if(!ta || !ce) return;
 
   const CODICI = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
-
   const KM_RE = /^\d+\+\d+\s+(DX|SX)/i;
   const NODAC_RE = /\bNO\s*DAC\b/i;
   const META_RE = /^(dispari|pari|unico|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|operatore\s|strumento\s|linea\s|tratta\s)/i;
@@ -1854,29 +1843,22 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
     return false;
   }
 
-  // Stessa logica del parser V1: ogni riga km+DX/SX è una saldatura,
-  // le righe dopo (finché non c'è un'altra saldatura o metadato) sono figlie
   function classifyAll(lines){
     const results = new Array(lines.length).fill('meta');
     for(let i=0; i<lines.length; i++){
       const t = lines[i].trim();
       if(!t){ results[i] = 'skip'; continue; }
-
-      // Non è una saldatura → meta
       if(!KM_RE.test(t)) continue;
-
-      // È una saldatura → controlla la riga stessa
       let cls = 'ok';
       const up = t.toUpperCase();
       if(NODAC_RE.test(up)) cls = 'nodac';
       else if(trovaDif(up)) cls = 'diff';
       else {
-        // Guarda le righe figlie (come fa il V1: avanza finché non trova nuova saldatura/metadato/vuota)
         for(let j=i+1; j<lines.length; j++){
           const child = lines[j].trim();
-          if(!child) break; // riga vuota = fine gruppo
-          if(KM_RE.test(child)) break; // nuova saldatura
-          if(META_RE.test(child)) break; // metadato globale
+          if(!child) break;
+          if(KM_RE.test(child)) break;
+          if(META_RE.test(child)) break;
           const childUp = child.toUpperCase();
           if(NODAC_RE.test(childUp)){ cls = 'nodac'; break; }
           if(trovaDif(childUp)){ cls = 'diff'; break; }
@@ -1887,29 +1869,81 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
     return results;
   }
 
-  function renderPreview(){
-    const text = ta.value;
-    if(!text.trim()){
-      preview.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
-      if(liveStrip) liveStrip.style.display = 'none';
-      return;
+  // Estrai testo puro dal contenteditable
+  function getText(){
+    // Prendi il testo da ogni riga
+    const nodes = ce.childNodes;
+    let text = '';
+    for(let i=0; i<nodes.length; i++){
+      const n = nodes[i];
+      if(n.nodeType === 3) { text += n.textContent; continue; }
+      if(n.tagName === 'BR') { text += '\n'; continue; }
+      if(n.tagName === 'DIV' || n.tagName === 'P'){
+        if(i > 0) text += '\n';
+        text += n.textContent;
+      } else {
+        text += n.textContent;
+      }
     }
-    const lines = text.split('\n');
-    const classes = classifyAll(lines);
-    let html = '';
-    let cOk=0, cDiff=0, cNd=0, cSald=0;
-    for(let i=0; i<lines.length; i++){
-      const cls = classes[i];
-      const displayText = lines[i].trim() || '&nbsp;';
-      if(cls==='ok') { cOk++; cSald++; }
-      else if(cls==='diff') { cDiff++; cSald++; }
-      else if(cls==='nodac') { cNd++; cSald++; }
-      html += '<div class="el"><div class="el-bar '+cls+'"></div><span class="el-text '+cls+'">'+displayText.replace(/</g,'&lt;')+'</span></div>';
-    }
-    html += '<div style="min-height:40px"></div>';
-    preview.innerHTML = html;
+    return text;
+  }
 
-    // Live strip
+  // Salva posizione cursore
+  function saveCursor(){
+    const sel = window.getSelection();
+    if(!sel.rangeCount) return null;
+    const range = sel.getRangeAt(0);
+    const pre = document.createRange();
+    pre.selectNodeContents(ce);
+    pre.setEnd(range.startContainer, range.startOffset);
+    return pre.toString().length;
+  }
+
+  // Ripristina posizione cursore
+  function restoreCursor(pos){
+    if(pos === null) return;
+    const sel = window.getSelection();
+    const range = document.createRange();
+    let current = 0;
+    const walker = document.createTreeWalker(ce, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while(node = walker.nextNode()){
+      const len = node.textContent.length;
+      if(current + len >= pos){
+        range.setStart(node, pos - current);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        return;
+      }
+      current += len;
+    }
+    // Fallback: fine del contenuto
+    range.selectNodeContents(ce);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  let renderTimeout = null;
+  function scheduleRender(){
+    clearTimeout(renderTimeout);
+    renderTimeout = setTimeout(colorize, 300);
+  }
+
+  function syncToTextarea(){
+    ta.value = getText();
+    // Trigger char counter update
+    ta.dispatchEvent(new Event('input', {bubbles:true}));
+  }
+
+  function updateLiveStrip(lines, classes){
+    let cOk=0, cDiff=0, cNd=0, cSald=0;
+    for(let i=0; i<classes.length; i++){
+      if(classes[i]==='ok'){cOk++;cSald++;}
+      else if(classes[i]==='diff'){cDiff++;cSald++;}
+      else if(classes[i]==='nodac'){cNd++;cSald++;}
+    }
     if(liveStrip && cSald > 0){
       liveStrip.style.display = 'flex';
       if(lsText) lsText.textContent = cSald + ' saldatur' + (cSald===1?'a':'e');
@@ -1921,37 +1955,73 @@ if("serviceWorker" in navigator && location.protocol !== 'file:'){
     }
   }
 
-  const wrap = ta.closest('.editor-wrap');
-
-  function showPreview(){
-    if(ta.value.trim()){
-      renderPreview();
-      wrap.classList.add('has-preview');
+  function colorize(){
+    const text = getText();
+    syncToTextarea();
+    if(!text.trim()){
+      ce.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
+      if(liveStrip) liveStrip.style.display = 'none';
+      return;
     }
-  }
-  function showTextarea(){
-    wrap.classList.remove('has-preview');
-    ta.focus();
+    const cursorPos = saveCursor();
+    const lines = text.split('\n');
+    const classes = classifyAll(lines);
+    let html = '';
+    for(let i=0; i<lines.length; i++){
+      const cls = classes[i];
+      const t = lines[i] || '\u200B';
+      html += '<div class="el"><div class="el-bar '+cls+'"></div><span class="el-text '+cls+'">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></div>';
+    }
+    ce.innerHTML = html;
+    restoreCursor(cursorPos);
+    updateLiveStrip(lines, classes);
   }
 
-  // When textarea loses focus → show colored preview
-  ta.addEventListener('blur', function(){ setTimeout(showPreview, 150); });
-  // When preview is clicked → back to textarea
-  preview.addEventListener('click', showTextarea);
-  // Update preview on input (for live strip counts)
-  ta.addEventListener('input', renderPreview);
-  ta.addEventListener('paste', function(){ setTimeout(function(){ renderPreview(); showPreview(); }, 50); });
+  // Input events
+  ce.addEventListener('input', function(){
+    syncToTextarea();
+    scheduleRender();
+  });
 
-  // Override clear to reset to textarea
+  ce.addEventListener('paste', function(e){
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+    setTimeout(function(){ syncToTextarea(); colorize(); }, 10);
+  });
+
+  // Focus: se vuoto, togli empty state
+  ce.addEventListener('focus', function(){
+    if(ce.querySelector('.editor-empty')){
+      ce.innerHTML = '';
+    }
+  });
+
+  // Blur: se vuoto, rimetti empty state
+  ce.addEventListener('blur', function(){
+    syncToTextarea();
+    if(!getText().trim()){
+      ce.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
+    } else {
+      colorize();
+    }
+  });
+
+  // Clear button
   const origClear = document.getElementById('btn-clear');
   if(origClear){
     origClear.addEventListener('click', function(){
-      setTimeout(function(){ wrap.classList.remove('has-preview'); renderPreview(); }, 50);
+      ce.innerHTML = '';
+      syncToTextarea();
+      setTimeout(function(){
+        ce.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
+        if(liveStrip) liveStrip.style.display = 'none';
+      }, 50);
     });
   }
 
   // Initial render
-  renderPreview();
+  if(ta.value.trim()) colorize();
 })();
 </script>
 
