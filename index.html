@@ -1005,6 +1005,9 @@ function parse(txt) {
     const mDevCode = restoUp.match(/\bD\d+[A-Z]?\b/);
     if (mDevCode && !CODICI_DIFETTO.includes(mDevCode[0])) note.push(mDevCode[0]);
 
+    // Dati extra per scheda I.1
+    const extra = {};
+
     // Punzone: matricola [sigla_ditta] [mese anno]
     // Formato lungo: "754 CGF 3 26" (punzone ditta mese anno)
     const mPunzFull = resto.match(/\b(\d{3,4})\s+([A-Z]{2,4})\s+(\d{1,2})\s+(\d{2,4})\b/i);
@@ -1036,9 +1039,6 @@ function parse(txt) {
     const mCl = restoSenzaDate.match(/\b([SAB]\d?)\b/i);
     if (mCl && mCl[1].length <= 2 && !(hasDev && /^S\d/i.test(mCl[1]))) classif = mCl[1].toUpperCase();
     let isNodac = /\bNO\s*DAC\b/i.test(restoUp);
-
-    // Dati extra per scheda I.1 (dalle righe figlie)
-    const extra = {};
 
     // ── RIGHE FIGLIE: leggi avanti finché non trovi una nuova saldatura o metadato ──
     while (i + 1 < righe.length) {
