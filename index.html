@@ -1008,6 +1008,11 @@ function parse(txt) {
     // Punzone: matricola [sigla_ditta] mese anno
     const mPunzone = resto.match(/\b(\d{3,4})\s+(?:([A-Z]{2,4})\s+)?(\d{1,2})\s+(\d{2,4})\b/i);
     if (mPunzone && !CODICI_DIFETTO.includes(mPunzone[1])) {
+      extra.punzone = mPunzone[1];
+      if (mPunzone[2]) extra.ditta = mPunzone[2].toUpperCase();
+      const mese = mPunzone[3].padStart(2,'0');
+      const anno = mPunzone[4].length === 2 ? '20' + mPunzone[4] : mPunzone[4];
+      extra.data_ese = mese + '/' + anno;
       let punz = 'PUNZONE ' + mPunzone[1];
       if (mPunzone[2]) punz += ' ' + mPunzone[2].toUpperCase();
       punz += ' ' + mPunzone[3] + '/' + mPunzone[4];
@@ -1467,6 +1472,9 @@ function apriModal(idx) {
   setVal('scost', ex.scost||'');
   setVal('percent', ex.percent||'');
   setVal('palo_te', ex.palo_te||'');
+  setVal('punzone', ex.punzone||'');
+  setVal('ditta', ex.ditta||'');
+  setVal('data_ese', ex.data_ese||'');
   
   // Reset pills
   document.querySelectorAll('#scheda-editor .pill').forEach(p => {
