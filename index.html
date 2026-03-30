@@ -1452,7 +1452,8 @@ function apriModal(idx) {
   setVal('data_scheda', s.data||'');
   setVal('codice', s.codice||'');
   setVal('classif', s.classif||'');
-  setVal('firma', s.operatore||'');
+  setVal('rivelatore', 'EPOCH 650');
+  setVal('accopp', 'GEL');
   setVal('note', ex.osservazioni||(s.tipo==='Alluminotermica'?'SALDATURA ALLUMINOTERMICA':s.tipo==='Scintillio'?'SALDATURA A SCINTILLIO':''));
   setVal('sede', ex.sede||'');
   setVal('w', ex.w||'');
@@ -1492,8 +1493,10 @@ function apriModal(idx) {
     if(bPill) { bPill.classList.add('on'); bPill.querySelector('.pill-dot').textContent = 'X'; }
   }
 
-  // Set rivelatore/strumento
-  if(s.strumento) setVal('rivelatore', s.strumento);
+  // Default rotaia E1
+  schedaState['rotaia_e1'] = true;
+  const pillE1 = document.querySelector('#scheda-editor .pill[data-k="e1"]');
+  if(pillE1) { pillE1.classList.add('on'); pillE1.querySelector('.pill-dot').textContent = 'X'; }
   
   // Update title
   aggiornaSchedaTitolo(s);
