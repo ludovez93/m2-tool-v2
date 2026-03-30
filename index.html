@@ -1539,11 +1539,6 @@ function apriModal(idx) {
     schedaState['sa_thermit'] = true;
     const pillTh = document.querySelector('#scheda-editor .pill[data-k="thermit"]');
     if(pillTh) { pillTh.classList.add('on'); pillTh.querySelector('.pill-dot').textContent = 'X'; }
-  } else {
-    // Default: saldatura RFI
-    schedaState['saldatura_rfi'] = true;
-    const pillRfi = document.querySelector('#scheda-editor .pill[data-g="saldatura"][data-k="rfi"]');
-    if(pillRfi) { pillRfi.classList.add('on'); pillRfi.querySelector('.pill-dot').textContent = 'X'; }
   }
 
   // Update title
