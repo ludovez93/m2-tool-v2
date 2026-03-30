@@ -1512,11 +1512,6 @@ function apriModal(idx) {
   const pillE1 = document.querySelector('#scheda-editor .pill[data-k="e1"]');
   if(pillE1) { pillE1.classList.add('on'); pillE1.querySelector('.pill-dot').textContent = 'X'; }
 
-  // Default Galileo SI
-  schedaState['galileo_si'] = true;
-  const pillGal = document.querySelector('#scheda-editor .pill[data-g="galileo"][data-k="si"]');
-  if(pillGal) { pillGal.classList.add('on'); pillGal.querySelector('.pill-dot').textContent = 'X'; }
-
   // Se Alluminotermica + ha punzone ditta → "Saldatura eseguita da DITTA" + Thermit default
   if(s.tipo === 'Alluminotermica' && ex.ditta) {
     schedaState['saldatura_ditta'] = true;
