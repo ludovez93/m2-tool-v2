@@ -82,6 +82,7 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .section{margin-bottom:16px;padding:0}
 .section-label{font-size:14px;font-weight:700;letter-spacing:-0.1px;color:#666;margin-bottom:12px;padding:0 2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .section-label::before,.section-label::after{display:none}
+.slabel{font-size:14px;font-weight:700;color:#666;letter-spacing:-0.1px;margin-bottom:12px;padding:0 2px;display:flex;align-items:center;justify-content:space-between}
 .slabel-action{font-size:12px;font-weight:700;color:var(--ac);background:var(--acbg);border:none;padding:6px 14px;border-radius:8px;cursor:pointer}
 .tab-panel{display:none}
 .tab-panel.active{display:block;animation:fadeIn 0.35s ease}
@@ -172,6 +173,7 @@ textarea::placeholder{color:var(--w3)}
 
 /* ── Stats (from screen2 mockup) ── */
 .stats-card{padding:16px 18px}
+.stats,.stats-bar{display:flex;gap:6px;margin-bottom:12px}
 .stats,.stats-bar{display:flex;gap:6px}
 .stat,.stat-card{flex:1;padding:10px 0;background:rgba(255,255,255,0.018);border:1px solid rgba(255,255,255,0.05);border-radius:12px;position:relative;overflow:hidden;text-align:center;animation:countUp 0.5s ease both;border-left:none}
 .stat::before,.stat-card::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;border-radius:1px}
@@ -194,7 +196,10 @@ textarea::placeholder{color:var(--w3)}
 .stat-icon{display:none}
 
 /* Progress bar */
-.risultati-progress{height:4px;border-radius:2px;background:rgba(255,255,255,0.04);overflow:hidden}
+.progress,.risultati-progress{height:4px;border-radius:2px;background:rgba(255,255,255,0.04);overflow:hidden}
+.progress-fill,.risultati-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#4ade80,var(--ac));transition:width 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.progress-labels,.risultati-progress-label{display:flex;justify-content:space-between;margin-top:8px}
+.progress-labels span,.risultati-progress-label span{font-family:var(--mono);font-size:11px;font-weight:600;color:#555}
 .risultati-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#4ade80,var(--ac));transition:width 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
 .risultati-progress-fill::after{display:none}
 .risultati-progress-label{display:flex;justify-content:space-between;margin-top:8px}
