@@ -66,7 +66,7 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .tabs-wrapper{position:fixed;bottom:0;left:0;right:0;z-index:100;top:auto;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(10,10,14,0.75);backdrop-filter:blur(50px) saturate(180%);-webkit-backdrop-filter:blur(50px) saturate(180%);display:flex;gap:4px}
 .tabs-wrapper::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)}
 
-.tab{flex:1;padding:8px 0 4px;font-size:10px;font-weight:600;min-height:52px;color:var(--w3);border:none;border-bottom:none;border-radius:12px;margin:0;background:transparent;cursor:pointer;user-select:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all 0.2s;letter-spacing:0.2px}
+.tab{flex:1;padding:6px 0;font-size:10px;font-weight:600;height:56px;color:var(--w3);border:none;border-bottom:none;border-radius:12px;margin:0;background:transparent;cursor:pointer;user-select:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.2s;letter-spacing:0.2px}
 .tab-icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:filter 0.25s}
 .tab.active{color:var(--ac);background:rgba(10,132,255,0.06)}
 .tab.active .tab-icon{filter:drop-shadow(0 0 8px rgba(10,132,255,0.5))}
@@ -431,7 +431,7 @@ textarea::placeholder{color:var(--w3)}
   .compila-hero,.risultati-hero,.difetti-hero{padding:18px;margin-bottom:16px}
   textarea{min-height:240px;padding:14px 18px}
   .cta,.btn-primary,.btn-secondary{min-height:50px;font-size:15px}
-  .tab{min-height:52px}
+  .tab{height:56px}
   .se-form-page{padding:16px 22px 100px}
   .fsection{border-radius:16px;margin-bottom:12px}
   .sig-canvas-wrap canvas{height:100px}
@@ -449,9 +449,9 @@ textarea::placeholder{color:var(--w3)}
 
 <!-- Bottom Nav Tabs -->
 <div class="tabs-wrapper">
-  <div class="tab active" data-tab="0"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Compila</div>
-  <div class="tab" data-tab="1"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Risultati <span class="tab-count" id="tc1">0</span></div>
-  <div class="tab" data-tab="2"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Difetti <span class="tab-count" id="tc2">0</span></div>
+  <div class="tab active" data-tab="0"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Compila</span></div>
+  <div class="tab" data-tab="1"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span>Risultati</span><span class="tab-count" id="tc1">0</span></div>
+  <div class="tab" data-tab="2"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Difetti</span><span class="tab-count" id="tc2">0</span></div>
 </div>
 
 <div class="main">
@@ -1294,7 +1294,10 @@ function aggiornaUI() {
   document.getElementById('tc1').textContent=tot||'0';
   const tc2 = document.getElementById('tc2');
   const totalIssues = diff + nodac;
-  tc2.textContent = totalIssues || '0';
+  if(diff && nodac) tc2.textContent = diff + 'D · ' + nodac + 'ND';
+  else if(diff) tc2.textContent = diff;
+  else if(nodac) tc2.textContent = nodac + ' ND';
+  else tc2.textContent = '0';
   tc2.classList.toggle('tc-danger', totalIssues > 0);
 
   // Risultati Hero
