@@ -947,7 +947,7 @@ function parse(txt) {
 
     // Metadati
     if (/^strumento\s/i.test(r)) { strumento = r.replace(/^strumento\s*/i,'').trim(); continue; }
-    if (/^linea\s/i.test(r)) { linea = r.replace(/^linea\s+/i,'').trim(); continue; }
+    if (/^linea[\s:]+/i.test(r)) { linea = r.replace(/^linea[\s:]+/i,'').trim(); continue; }
     if (/^tratta\s/i.test(r)) { tratta = r.replace(/^tratta\s+/i,'').trim(); continue; }
 
     // Riga saldatura "120+318 DX [resto]" oppure "120+318 SX"
@@ -1279,8 +1279,7 @@ document.getElementById('btn-elabora').addEventListener('click', () => {
     const els = ce.querySelectorAll('.el-text');
     if(els.length) {
       const lines = Array.from(els).map(el => {
-        const t = el.textContent;
-        return t === '\u200B' ? '' : t;
+        return el.textContent.replace(/\u200B/g, '').replace(/\u00A0/g, ' ');
       });
       textarea.value = lines.join('\n');
     } else if(ce.textContent.trim() && !ce.querySelector('.editor-empty')) {
