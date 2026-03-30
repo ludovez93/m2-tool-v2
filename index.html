@@ -103,11 +103,16 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .et-clear:active{background:rgba(255,69,58,0.06);color:#FF453A}
 .et-clear svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
-/* Hidden textarea for JS input */
-.editor-textarea{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none}
+/* Editor wrap: contains both textarea and preview overlay */
+.editor-wrap{position:relative;min-height:280px}
 
-/* Editor body with colored lines (from mockup) */
-.editor-body{padding:14px 18px;min-height:280px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;cursor:text}
+/* Textarea: transparent text, user types/pastes here */
+.editor-textarea{width:100%;height:100%;background:transparent;border:none;color:transparent;caret-color:var(--ac);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:280px;position:absolute;top:0;left:0;z-index:2}
+.editor-textarea::placeholder{color:transparent}
+.editor-textarea::-webkit-scrollbar{display:none}
+
+/* Editor body: colored preview, sits below textarea */
+.editor-body{padding:14px 18px;min-height:280px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;position:relative;z-index:1;pointer-events:none}
 .el{display:flex;align-items:center;gap:0;padding:1px 0}
 .el-bar{width:3px;min-height:20px;border-radius:1.5px;margin-right:12px;flex-shrink:0;transition:background 0.3s}
 .el-bar.meta{background:rgba(255,255,255,0.08)}
@@ -457,17 +462,17 @@ textarea::placeholder{color:var(--w3)}
         </button>
       </div>
 
-      <!-- Textarea nascosto per JS input -->
-      <textarea id="input-lista" class="editor-textarea"></textarea>
-
-      <!-- Preview colorata delle righe -->
-      <div class="editor-body" id="editor-preview">
+      <div class="editor-wrap">
+        <!-- Textarea trasparente per input -->
+        <textarea id="input-lista" class="editor-textarea" placeholder="Incolla la lista saldature..."></textarea>
+        <!-- Preview colorata sotto -->
+        <div class="editor-body" id="editor-preview">
         <div class="editor-empty">
           <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
           <div class="editor-empty-title">Incolla la lista saldature</div>
           <div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div>
         </div>
-      </div>
+      </div><!-- /editor-wrap -->
 
       <div class="live-strip" id="live-strip" style="display:none">
         <div class="ls-dot"></div>
@@ -1839,28 +1844,10 @@ if("serviceWorker" in navigator){
     }
   }
 
-  // Click on preview = focus textarea for paste
-  preview.addEventListener('click', function(){
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0.01';
-    ta.style.pointerEvents = 'auto';
-    ta.style.top = '0';
-    ta.style.left = '0';
-    ta.style.width = '100%';
-    ta.style.height = '50%';
-    ta.style.zIndex = '999';
-    ta.focus();
-  });
-
-  ta.addEventListener('blur', function(){
-    ta.style.position = 'absolute';
-    ta.style.opacity = '0';
-    ta.style.pointerEvents = 'none';
-    ta.style.zIndex = '-1';
-  });
-
+  // Textarea is always interactive (transparent text on top, preview below)
   ta.addEventListener('input', renderPreview);
   ta.addEventListener('change', renderPreview);
+  ta.addEventListener('paste', function(){ setTimeout(renderPreview, 10); });
 
   // Override clear to also update preview
   const origClear = document.getElementById('btn-clear');
