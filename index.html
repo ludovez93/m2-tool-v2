@@ -1297,6 +1297,8 @@ document.getElementById('btn-elabora').addEventListener('click', () => {
   setTimeout(() => {
     try {
       localStorage.setItem('m2_last_input', txt);
+      // Pulisci schede salvate da elaborazione precedente
+      for(var k in localStorage) { if(k.startsWith('m2_scheda_')) localStorage.removeItem(k); }
       saldature = parse(txt);
       aggiornaUI();
       updateFlowSteps();
