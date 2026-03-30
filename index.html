@@ -1787,52 +1787,46 @@ if("serviceWorker" in navigator){
 
   const CODICI = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
 
-  function hasKm(s){ return /\d{2,3}\+\d{2,3}/.test(s); }
-  function hasNoDac(s){ return /NO\s*DAC/i.test(s); }
-  function hasCodice(s){
-    const up = s.toUpperCase();
+  const KM_RE = /^\d+\+\d+\s+(DX|SX)/i;
+  const NODAC_RE = /\bNO\s*DAC\b/i;
+  const META_RE = /^(dispari|pari|unico|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|operatore\s|strumento\s|linea\s|tratta\s)/i;
+
+  function trovaDif(s){
     for(const c of CODICI){
-      const esc = c.replace(/\./g,'\\.');
-      if(new RegExp('\\b'+esc+'\\b').test(up)) return true;
+      if(new RegExp('\\b'+c.replace(/\./g,'\\.')+'\\b').test(s)) return true;
     }
     return false;
   }
 
-  // Due passate: trova gruppi saldatura + figlie, colora il gruppo
+  // Stessa logica del parser V1: ogni riga km+DX/SX è una saldatura,
+  // le righe dopo (finché non c'è un'altra saldatura o metadato) sono figlie
   function classifyAll(lines){
     const results = new Array(lines.length).fill('meta');
-    // Passo 1: trova i gruppi (saldatura + righe figlie fino a riga vuota)
-    let groups = []; // [{start, end, weldLines:[indexes], childLines:[indexes]}]
-    let g = null;
     for(let i=0; i<lines.length; i++){
       const t = lines[i].trim();
-      if(!t){
-        results[i] = 'skip';
-        if(g){ groups.push(g); g = null; }
-        continue;
-      }
-      if(hasKm(t)){
-        if(!g) g = {weldLines:[], childLines:[]};
-        g.weldLines.push(i);
-      } else {
-        if(g) g.childLines.push(i);
-      }
-    }
-    if(g) groups.push(g);
+      if(!t){ results[i] = 'skip'; continue; }
 
-    // Passo 2: per ogni gruppo, determina il colore dalle righe saldatura + figlie
-    for(const grp of groups){
+      // Non è una saldatura → meta
+      if(!KM_RE.test(t)) continue;
+
+      // È una saldatura → controlla la riga stessa
       let cls = 'ok';
-      // Controlla tutte le righe del gruppo
-      const allIdx = [...grp.weldLines, ...grp.childLines];
-      for(const idx of allIdx){
-        const t = lines[idx].toUpperCase().trim();
-        if(hasNoDac(t)){ cls = 'nodac'; break; }
-        if(hasCodice(t)){ cls = 'diff'; break; }
+      const up = t.toUpperCase();
+      if(NODAC_RE.test(up)) cls = 'nodac';
+      else if(trovaDif(up)) cls = 'diff';
+      else {
+        // Guarda le righe figlie (come fa il V1: avanza finché non trova nuova saldatura/metadato/vuota)
+        for(let j=i+1; j<lines.length; j++){
+          const child = lines[j].trim();
+          if(!child) break; // riga vuota = fine gruppo
+          if(KM_RE.test(child)) break; // nuova saldatura
+          if(META_RE.test(child)) break; // metadato globale
+          const childUp = child.toUpperCase();
+          if(NODAC_RE.test(childUp)){ cls = 'nodac'; break; }
+          if(trovaDif(childUp)){ cls = 'diff'; break; }
+        }
       }
-      // Applica il colore alle righe saldatura
-      for(const idx of grp.weldLines) results[idx] = cls;
-      // Le righe figlie restano 'meta'
+      results[i] = cls;
     }
     return results;
   }
