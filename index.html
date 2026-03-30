@@ -90,21 +90,46 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:relative;box-shadow:var(--shadow);margin-bottom:16px}
 .card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);z-index:1}
 
-/* ── Editor Card (from screen1 mockup) ── */
-.input-card{border-radius:20px;overflow:hidden;position:relative;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);transition:border-color 0.25s,box-shadow 0.25s}
-.input-card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);z-index:1}
-.input-card:focus-within{border-color:rgba(10,132,255,0.15);box-shadow:var(--shadow),0 0 0 1px rgba(10,132,255,0.08),0 0 60px rgba(10,100,255,0.04)}
+/* ── Editor Card (EXACT from screen1 mockup) ── */
+.editor{border-radius:20px;overflow:hidden;position:relative;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);transition:border-color 0.25s,box-shadow 0.25s}
+.editor::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);z-index:1}
+.editor.focused{border-color:rgba(10,132,255,0.15);box-shadow:0 2px 8px rgba(0,0,0,0.3),0 12px 48px rgba(0,0,0,0.2),0 0 0 1px rgba(10,132,255,0.08),0 0 60px rgba(10,100,255,0.04)}
 
-.editor-toolbar,.input-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--sep)}
-.et-left,.input-header-left{display:flex;align-items:center;gap:8px}
-.et-dot,.input-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 10px rgba(10,132,255,0.5);animation:glow 2.5s ease-in-out infinite}
+.editor-toolbar{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--sep)}
+.et-left{display:flex;align-items:center;gap:8px}
+.et-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 10px rgba(10,132,255,0.5);animation:glow 2.5s ease-in-out infinite}
 .et-label{font-size:13px;font-weight:600;color:#777;letter-spacing:0.2px}
-.input-header-left span{font-size:13px;font-weight:600;color:#777;letter-spacing:0.2px}
-.et-clear,.clear-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,69,58,0.7);background:none;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
-.et-clear:hover,.et-clear:active,.clear-btn:active{background:rgba(255,69,58,0.06);color:#FF453A;opacity:0.7;transform:scale(0.97)}
+.et-clear{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,69,58,0.7);background:none;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
+.et-clear:active{background:rgba(255,69,58,0.06);color:#FF453A}
 .et-clear svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
-textarea{width:100%;background:transparent;border:none;color:var(--w);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:220px}
+/* Hidden textarea for JS input */
+.editor-textarea{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none}
+
+/* Editor body with colored lines (from mockup) */
+.editor-body{padding:14px 18px;min-height:280px;font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;cursor:text}
+.el{display:flex;align-items:center;gap:0;padding:1px 0}
+.el-bar{width:3px;min-height:20px;border-radius:1.5px;margin-right:12px;flex-shrink:0;transition:background 0.3s}
+.el-bar.meta{background:rgba(255,255,255,0.08)}
+.el-bar.ok{background:var(--gn);box-shadow:0 0 10px rgba(34,255,119,0.3)}
+.el-bar.diff{background:var(--rd);box-shadow:0 0 10px rgba(255,68,68,0.3)}
+.el-bar.nodac{background:var(--yl);box-shadow:0 0 10px rgba(255,224,51,0.3)}
+.el-bar.skip{background:transparent}
+.el-text{color:#777}
+.el-text.meta{color:#444}
+.el-text.ok{color:#b8b8be}
+.el-text.diff{color:#eee}
+.el-text.nodac{color:#ccc}
+.el-text.skip{color:#2a2a30;font-style:italic;font-size:12px;text-decoration:line-through;text-decoration-color:#222}
+
+/* Empty state */
+.editor-empty{padding:60px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.editor-empty svg{width:40px;height:40px;stroke:#333;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.editor-empty-title{font-size:14px;font-weight:700;color:#444}
+.editor-empty-sub{font-size:12px;color:#333;line-height:1.5}
+
+/* Keep textarea styling for scheda form inputs */
+textarea:not(.editor-textarea){width:100%;background:transparent;border:none;color:var(--w);font-family:var(--mono);font-size:13.5px;line-height:2.2;letter-spacing:-0.2px;padding:14px 18px;resize:none;outline:none;min-height:220px}
 textarea::placeholder{color:var(--w3)}
 
 /* ── Live Strip (from screen1 mockup) ── */
@@ -415,79 +440,72 @@ textarea::placeholder{color:var(--w3)}
   <!-- PANEL 0: COMPILA -->
   <div class="tab-panel active" id="panel-0">
 
-    <div class="compila-hero">
-      <div class="hero-status">
-        <div class="hero-status-dot"></div>
-        <span class="hero-status-text">Pronto</span>
-      </div>
-      <div class="hero-title">Ispezione Saldature</div>
-      <div class="hero-subtitle">Incolla i dati, elabora in un tap</div>
-    </div>
+    <!-- Hidden elements for JS compatibility -->
+    <div class="compila-hero"><div class="hero-status"><div class="hero-status-dot"></div><span class="hero-status-text">Pronto</span></div></div>
+    <div class="flow-steps" id="flow-steps"><div class="flow-step active" data-flow="0"><div class="flow-num">1</div><span class="flow-label">Incolla</span></div><div class="flow-line" id="flow-line-1"></div><div class="flow-step" data-flow="1"><div class="flow-num">2</div><span class="flow-label">Elabora</span></div><div class="flow-line" id="flow-line-2"></div><div class="flow-step" data-flow="2"><div class="flow-num">3</div><span class="flow-label">Risultati</span></div></div>
 
-    <div class="flow-steps" id="flow-steps">
-      <div class="flow-step active" data-flow="0">
-        <div class="flow-num">1</div>
-        <span class="flow-label">Incolla</span>
-      </div>
-      <div class="flow-line" id="flow-line-1"></div>
-      <div class="flow-step" data-flow="1">
-        <div class="flow-num">2</div>
-        <span class="flow-label">Elabora</span>
-      </div>
-      <div class="flow-line" id="flow-line-2"></div>
-      <div class="flow-step" data-flow="2">
-        <div class="flow-num">3</div>
-        <span class="flow-label">Risultati</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="input-card">
-        <div class="editor-toolbar">
-          <div class="et-left">
-            <div class="et-dot"></div>
-            <span class="et-label">Lista saldature</span>
-          </div>
-          <button class="et-clear" id="btn-clear">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            Svuota
-          </button>
+    <!-- Editor Card — identico al mockup screen1 -->
+    <div class="editor focused">
+      <div class="editor-toolbar">
+        <div class="et-left">
+          <div class="et-dot"></div>
+          <span class="et-label">Lista saldature</span>
         </div>
-        <textarea id="input-lista" placeholder="10/03/2026 DX&#10;ALLUMINOTERMICA 120+300 CONFORME&#10;ALLUMINOTERMICA 120+450 4212&#10;NO DAC 120+600&#10;..."></textarea>
-        <div class="editor-foot">
-          <span class="ef-count char-counter" id="char-counter">0 righe</span>
-          <span class="ef-hint">
-            <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
-            Clipboard
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="action-row">
-        <button class="cta" id="btn-elabora">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          Elabora lista
+        <button class="et-clear" id="btn-clear">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Svuota
         </button>
-        <button class="btn-secondary" id="btn-reset">Reset</button>
+      </div>
+
+      <!-- Textarea nascosto per JS input -->
+      <textarea id="input-lista" class="editor-textarea"></textarea>
+
+      <!-- Preview colorata delle righe -->
+      <div class="editor-body" id="editor-preview">
+        <div class="editor-empty">
+          <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
+          <div class="editor-empty-title">Incolla la lista saldature</div>
+          <div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div>
+        </div>
+      </div>
+
+      <div class="live-strip" id="live-strip" style="display:none">
+        <div class="ls-dot"></div>
+        <span class="ls-text" id="ls-text">0 saldature</span>
+        <div class="ls-chips">
+          <span class="ls-chip g"><span class="ls-chip-dot"></span> <span id="ls-ok">0</span></span>
+          <span class="ls-chip r"><span class="ls-chip-dot"></span> <span id="ls-diff">0</span></span>
+          <span class="ls-chip y"><span class="ls-chip-dot"></span> <span id="ls-nd">0</span></span>
+        </div>
+      </div>
+
+      <div class="editor-foot">
+        <span class="ef-count char-counter" id="char-counter">0 righe</span>
+        <span class="ef-hint">
+          <svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>
+          Clipboard
+        </span>
       </div>
     </div>
 
-    <div class="section">
-      <div class="actions">
-        <div class="action" id="qa-esempio">
-          <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <span class="action-label">Esempio</span>
-        </div>
-        <div class="action" id="qa-paste">
-          <div class="action-ico"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg></div>
-          <span class="action-label">Incolla</span>
-        </div>
-        <div class="action" id="qa-last">
-          <div class="action-ico"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
-          <span class="action-label">Ultima</span>
-        </div>
+    <!-- CTA solo, full width — NO Reset -->
+    <button class="cta" id="btn-elabora">Elabora lista</button>
+    <!-- Reset nascosto per JS -->
+    <button id="btn-reset" style="display:none">Reset</button>
+
+    <!-- Quick Actions -->
+    <div class="actions">
+      <div class="action" id="qa-esempio">
+        <div class="action-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <span class="action-label">Esempio</span>
+      </div>
+      <div class="action" id="qa-paste">
+        <div class="action-ico"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg></div>
+        <span class="action-label">Incolla</span>
+      </div>
+      <div class="action" id="qa-last">
+        <div class="action-ico"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
+        <span class="action-label">Ultima</span>
       </div>
     </div>
 
@@ -1750,6 +1768,111 @@ if("serviceWorker" in navigator){
   const blob = new Blob([SW_CODE],{type:"application/javascript"});
   navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
 }
+
+// ── V2: Editor preview con barre colorate ──
+(function(){
+  const ta = document.getElementById('input-lista');
+  const preview = document.getElementById('editor-preview');
+  const liveStrip = document.getElementById('live-strip');
+  const lsText = document.getElementById('ls-text');
+  const lsOk = document.getElementById('ls-ok');
+  const lsDiff = document.getElementById('ls-diff');
+  const lsNd = document.getElementById('ls-nd');
+  if(!ta || !preview) return;
+
+  const CODICI = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
+
+  function classifyLine(line){
+    const up = line.toUpperCase().trim();
+    if(!up) return 'skip';
+    // Meta: date, headers
+    if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(up)) return 'meta';
+    if(/^(LINEA|TRATTA|BINARIO|GALLERIA|RETTA|CURVA|PIANO)/.test(up)) return 'meta';
+    if(/^(LP|OPERATORE|RIVELATORE|EPOCH)/.test(up)) return 'meta';
+    // NO DAC
+    if(/NO\s*DAC/.test(up)) return 'nodac';
+    // Difetto: ha un codice difetto
+    for(const c of CODICI){
+      const esc = c.replace('.','\\.');
+      if(new RegExp('\\b'+esc+'\\b').test(up)) return 'diff';
+    }
+    // Conforme
+    if(/CONFORME/.test(up)) return 'ok';
+    // Tipo saldatura senza stato = ok
+    if(/ALLUMINOTERMICA|SCINTILLIO|ALL\s+\d/.test(up)) return 'ok';
+    // Riga figlia (dati difetto)
+    if(/^(PERC|PROF|HS|DB|ANGOLO|PALO|P\.DEV|T\.DEV|DIFETTO VISIVO)/i.test(up)) return 'meta';
+    // Default
+    return 'meta';
+  }
+
+  function renderPreview(){
+    const text = ta.value;
+    if(!text.trim()){
+      preview.innerHTML = '<div class="editor-empty"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg><div class="editor-empty-title">Incolla la lista saldature</div><div class="editor-empty-sub">Da WhatsApp, Keep o appunti</div></div>';
+      if(liveStrip) liveStrip.style.display = 'none';
+      return;
+    }
+    const lines = text.split('\n');
+    let html = '';
+    let cOk=0, cDiff=0, cNd=0, cSald=0;
+    for(const line of lines){
+      const cls = classifyLine(line);
+      const displayText = line.trim() || '&nbsp;';
+      if(cls==='ok') { cOk++; cSald++; }
+      else if(cls==='diff') { cDiff++; cSald++; }
+      else if(cls==='nodac') { cNd++; cSald++; }
+      html += '<div class="el"><div class="el-bar '+cls+'"></div><span class="el-text '+cls+'">'+displayText.replace(/</g,'&lt;')+'</span></div>';
+    }
+    html += '<div style="min-height:40px"></div>';
+    preview.innerHTML = html;
+
+    // Live strip
+    if(liveStrip && cSald > 0){
+      liveStrip.style.display = 'flex';
+      if(lsText) lsText.textContent = cSald + ' saldatur' + (cSald===1?'a':'e');
+      if(lsOk) lsOk.textContent = cOk;
+      if(lsDiff) lsDiff.textContent = cDiff;
+      if(lsNd) lsNd.textContent = cNd;
+    } else if(liveStrip){
+      liveStrip.style.display = 'none';
+    }
+  }
+
+  // Click on preview = focus textarea for paste
+  preview.addEventListener('click', function(){
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0.01';
+    ta.style.pointerEvents = 'auto';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.width = '100%';
+    ta.style.height = '50%';
+    ta.style.zIndex = '999';
+    ta.focus();
+  });
+
+  ta.addEventListener('blur', function(){
+    ta.style.position = 'absolute';
+    ta.style.opacity = '0';
+    ta.style.pointerEvents = 'none';
+    ta.style.zIndex = '-1';
+  });
+
+  ta.addEventListener('input', renderPreview);
+  ta.addEventListener('change', renderPreview);
+
+  // Override clear to also update preview
+  const origClear = document.getElementById('btn-clear');
+  if(origClear){
+    origClear.addEventListener('click', function(){
+      setTimeout(renderPreview, 50);
+    });
+  }
+
+  // Initial render
+  renderPreview();
+})();
 </script>
 
 </body>
