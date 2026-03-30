@@ -1477,15 +1477,23 @@ function apriModal(idx) {
   });
   
   // Set fila pill
-  if(s.fila === 'DX') {
-    schedaState['fila_dx'] = true;
-    const pill = document.querySelector('#scheda-editor .pill[data-k="dx"]');
-    if(pill) { pill.classList.add('on'); pill.querySelector('.pill-dot').textContent = 'X'; }
-  } else if(s.fila === 'SX') {
-    schedaState['fila_sx'] = true;
-    const pill = document.querySelector('#scheda-editor .pill[data-k="sx"]');
+  if(s.fila === 'DX' || s.fila === 'SX') {
+    const key = 'fila_' + s.fila.toLowerCase();
+    schedaState[key] = true;
+    const pill = document.querySelector('#scheda-editor .pill[data-k="' + s.fila.toLowerCase() + '"]');
     if(pill) { pill.classList.add('on'); pill.querySelector('.pill-dot').textContent = 'X'; }
   }
+
+  // Set binario pill
+  if(s.binario) {
+    const bKey = 'binario_' + s.binario.toLowerCase();
+    schedaState[bKey] = true;
+    const bPill = document.querySelector('#scheda-editor .pill[data-g="binario"][data-k="' + s.binario.toLowerCase() + '"]');
+    if(bPill) { bPill.classList.add('on'); bPill.querySelector('.pill-dot').textContent = 'X'; }
+  }
+
+  // Set rivelatore/strumento
+  if(s.strumento) setVal('rivelatore', s.strumento);
   
   // Update title
   aggiornaSchedaTitolo(s);
