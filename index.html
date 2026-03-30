@@ -1275,9 +1275,17 @@ document.getElementById('qa-last').addEventListener('click', () => {
 document.getElementById('btn-elabora').addEventListener('click', () => {
   // Sync contenteditable → textarea prima di parsare
   const ce = document.getElementById('editor-preview');
-  if(ce && ce.textContent.trim()) {
-    const ta = document.getElementById('input-lista');
-    if(ta) ta.value = ce.innerText || ce.textContent;
+  if(ce) {
+    const els = ce.querySelectorAll('.el-text');
+    if(els.length) {
+      const lines = Array.from(els).map(el => {
+        const t = el.textContent;
+        return t === '\u200B' ? '' : t;
+      });
+      textarea.value = lines.join('\n');
+    } else if(ce.textContent.trim() && !ce.querySelector('.editor-empty')) {
+      textarea.value = ce.textContent;
+    }
   }
   const txt = textarea.value;
   if (!txt.trim()) { showToast('Incolla prima la lista saldature', 'info'); return; }
