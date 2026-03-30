@@ -38,7 +38,7 @@ html,body{background:var(--bg);color:var(--w);font-family:var(--sans);font-size:
 body{background:linear-gradient(180deg,#0c0c12 0%,#08080e 30%,#0a0a10 100%);background-attachment:fixed}
 *{-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 input,textarea,select{font-size:16px}
-input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-pdf,.se-btn-pdf,.se-tab,.btn-all,.btn-new,.drow-pdf,.rrow-pdf{touch-action:manipulation}
+input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-pdf,.btn-compila,.se-btn-pdf,.se-tab,.btn-all,.btn-new,.drow-pdf,.rrow-pdf{touch-action:manipulation}
 ::-webkit-scrollbar{width:0;height:0}
 
 @keyframes glow{0%,100%{opacity:.4}50%{opacity:1}}
@@ -312,6 +312,8 @@ textarea::placeholder{color:var(--w3)}
 .difetto-row:active{background:rgba(255,255,255,0.02)}
 .difetto-code{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--rd);width:auto;flex-shrink:0}
 .difetto-info{flex:1;font-size:13px;color:#999}
+.btn-compila{font-size:11px;font-weight:700;color:var(--ac);background:var(--acbg);border:none;border-radius:9999px;padding:8px 16px;font-family:var(--sans);cursor:pointer;flex-shrink:0;transition:all 0.15s;min-height:36px}
+.btn-compila:active{opacity:0.8;transform:scale(0.96)}
 .btn-pdf{font-size:12px;font-weight:700;color:var(--ac);background:var(--acbg);border:none;border-radius:9999px;padding:8px 14px;font-family:var(--sans);cursor:pointer;flex-shrink:0;transition:all 0.15s}
 .btn-pdf::before{display:none}
 .btn-pdf:active{opacity:0.8;transform:scale(0.96)}
@@ -595,7 +597,7 @@ textarea::placeholder{color:var(--w3)}
     </div>
 
     <!-- Scarica tutti i PDF -->
-    <button class="btn-all" id="btn-scarica-tutti" style="display:none">
+    <button class="btn-all" id="btn-scarica-tutti" style="display:none" onclick="scaricaTuttiPDF()">
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Scarica tutti i PDF
     </button>
@@ -1349,12 +1351,12 @@ function aggiornaUI() {
   let html='';
   if (soloDiff.length) {
     html+=`<div class="difetto-card" style="margin-bottom:16px;animation-delay:0.1s"><div class="difetto-header"><div class="difetto-title">${soloDiff.length} difett${soloDiff.length===1?'o':'i'} rilevat${soloDiff.length===1?'o':'i'}</div></div><div class="difetto-list">${
-      soloDiff.map((d,i)=>`<div class="difetto-row"><span class="difetto-code">${d.codice}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-pdf" onclick="apriModal(${d._idx})">↓ PDF</button></div>${i<soloDiff.length-1?'<div class="divider"></div>':''}`).join('')
+      soloDiff.map((d,i)=>`<div class="difetto-row"><span class="difetto-code">${d.codice}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-compila" onclick="apriModal(${d._idx})">Compila</button></div>${i<soloDiff.length-1?'<div class="divider"></div>':''}`).join('')
     }</div></div>`;
   }
   if (soloNodac.length) {
     html+=`<div class="difetto-card" style="animation-delay:0.2s"><div class="difetto-header" style="background:var(--yl-bg)"><div class="difetto-title" style="color:var(--yl)">⚠ ${soloNodac.length} NO DAC</div></div><div class="difetto-list">${
-      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:var(--yl)">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-pdf" onclick="apriModal(${d._idx})">↓ PDF</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
+      soloNodac.map((d,i)=>`<div class="difetto-row"><span class="difetto-code" style="color:var(--yl)">${d.codice||'—'}</span><div class="difetto-info">${d.km}${d.fila?' · '+d.fila:''} · ${d.tipo}${d.data?' · '+d.data:''}</div><button class="btn-compila" onclick="apriModal(${d._idx})">Compila</button></div>${i<soloNodac.length-1?'<div class="divider"></div>':''}`).join('')
     }</div></div>`;
   }
   dw.innerHTML=html;
@@ -1363,6 +1365,9 @@ function aggiornaUI() {
     var title = card.querySelector('.difetto-title');
     if(title && title.style.color === 'var(--yl)') card.classList.add('nodac-card');
   });
+  // Mostra/nascondi "Scarica tutti"
+  var btnAll = document.getElementById('btn-scarica-tutti');
+  if(btnAll) btnAll.style.display = (soloDiff.length + soloNodac.length > 1) ? 'flex' : 'none';
 }
 
 
@@ -1755,6 +1760,20 @@ function generaPDF() {
   showToast('PDF generato', 'success', 2500);
 }
 
+
+function scaricaTuttiPDF() {
+  var indici = getDifettiIndici();
+  if(!indici.length) { showToast('Nessun difetto da scaricare', 'info'); return; }
+  if(!window.jspdf) { showToast('Caricamento PDF in corso, riprova', 'info'); return; }
+  showToast('Generazione ' + indici.length + ' PDF...', 'info', 2000);
+  var i = 0;
+  function next() {
+    if(i >= indici.length) { showToast(indici.length + ' PDF generati', 'success'); return; }
+    apriModal(indici[i]);
+    setTimeout(function(){ generaPDF(); i++; setTimeout(next, 500); }, 100);
+  }
+  next();
+}
 
 // Listen to scheda form inputs for live preview + auto-save
 document.getElementById('scheda-editor').addEventListener('input', function(){ updScheda(); autoSaveScheda(); });
