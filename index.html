@@ -1790,24 +1790,17 @@ if("serviceWorker" in navigator){
   function classifyLine(line){
     const up = line.toUpperCase().trim();
     if(!up) return 'skip';
-    // Meta: date, headers
-    if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(up)) return 'meta';
-    if(/^(LINEA|TRATTA|BINARIO|GALLERIA|RETTA|CURVA|PIANO)/.test(up)) return 'meta';
-    if(/^(LP|OPERATORE|RIVELATORE|EPOCH)/.test(up)) return 'meta';
-    // NO DAC
-    if(/NO\s*DAC/.test(up)) return 'nodac';
-    // Difetto: ha un codice difetto
-    for(const c of CODICI){
-      const esc = c.replace('.','\\.');
-      if(new RegExp('\\b'+esc+'\\b').test(up)) return 'diff';
+    const hasKm = /\d{2,3}\+\d{2,3}/.test(up);
+    // Se ha un km → è una saldatura
+    if(hasKm){
+      if(/NO\s*DAC/.test(up)) return 'nodac';
+      for(const c of CODICI){
+        const esc = c.replace('.','\\.');
+        if(new RegExp('\\b'+esc+'\\b').test(up)) return 'diff';
+      }
+      return 'ok';
     }
-    // Conforme
-    if(/CONFORME/.test(up)) return 'ok';
-    // Tipo saldatura senza stato = ok
-    if(/ALLUMINOTERMICA|SCINTILLIO|ALL\s+\d/.test(up)) return 'ok';
-    // Riga figlia (dati difetto)
-    if(/^(PERC|PROF|HS|DB|ANGOLO|PALO|P\.DEV|T\.DEV|DIFETTO VISIVO)/i.test(up)) return 'meta';
-    // Default
+    // Righe senza km → meta/contesto
     return 'meta';
   }
 
