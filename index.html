@@ -51,7 +51,7 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 @keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* ── Topbar (from screen1 mockup) ── */
-.topbar{height:56px;padding:0 22px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,14,0.75);backdrop-filter:blur(50px) saturate(180%);-webkit-backdrop-filter:blur(50px) saturate(180%);display:flex;align-items:center;gap:12px}
+.topbar{height:28px;padding:0 22px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,14,0.75);backdrop-filter:blur(50px) saturate(180%);-webkit-backdrop-filter:blur(50px) saturate(180%);display:flex;align-items:center;justify-content:flex-end;gap:12px}
 .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)}
 
 .logo,.logo-badge{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:800;color:#fff;letter-spacing:0.5px;background:linear-gradient(145deg,#2979ff,#0050cc);box-shadow:0 2px 12px rgba(10,100,255,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative}
@@ -76,7 +76,7 @@ input,textarea,select,button,.cta,.tab,.pill,.sig-btn,.copy-btn,.et-clear,.btn-p
 .tc-danger{background:var(--rd-bg)!important;color:var(--rd)!important}
 
 /* ── Main Layout ── */
-.main{padding:72px 22px 100px;max-width:100%;position:relative;z-index:1}
+.main{padding:44px 22px 100px;max-width:100%;position:relative;z-index:1}
 .section{margin-bottom:16px;padding:0}
 .section-label{font-size:14px;font-weight:700;letter-spacing:-0.1px;color:#999;margin-bottom:12px;padding:0 2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .section-label::before,.section-label::after{display:none}
@@ -346,7 +346,7 @@ textarea::placeholder{color:var(--w3)}
 #scheda-editor{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column}
 #scheda-editor.open{display:flex;animation:su 0.4s cubic-bezier(0.32,0.72,0,1)}
 
-#scheda-editor .se-topbar{height:56px;background:rgba(10,10,14,0.85);backdrop-filter:blur(50px) saturate(180%);-webkit-backdrop-filter:blur(50px) saturate(180%);border-bottom:none;position:relative;display:flex;align-items:center;padding:0 18px;gap:10px;overflow:hidden}
+#scheda-editor .se-topbar{min-height:56px;padding:env(safe-area-inset-top,12px) 18px 8px;background:rgba(10,10,14,0.85);backdrop-filter:blur(50px) saturate(180%);-webkit-backdrop-filter:blur(50px) saturate(180%);border-bottom:none;position:relative;display:flex;align-items:center;gap:10px}
 #scheda-editor .se-topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)}
 #scheda-editor .se-topbar-title{font-size:16px;font-weight:800;color:#888;letter-spacing:-0.3px}
 #scheda-editor .se-topbar-sub{font-size:11px;color:#888;font-weight:500;margin-top:2px;letter-spacing:0.2px}
@@ -427,7 +427,7 @@ textarea::placeholder{color:var(--w3)}
 
 /* ── Mobile ── */
 @media(max-width:768px){
-  .main{padding:74px 22px 100px}
+  .main{padding:46px 22px 100px}
   .compila-hero,.risultati-hero,.difetti-hero{padding:18px;margin-bottom:16px}
   textarea{min-height:240px;padding:14px 18px}
   .cta,.btn-primary,.btn-secondary{min-height:50px;font-size:15px}
@@ -442,7 +442,6 @@ textarea::placeholder{color:var(--w3)}
 
 <!-- Topbar -->
 <div class="topbar">
-  <span class="topbar-title">M2 Tool</span>
   <div class="topbar-right">
     <div class="online-dot"></div>
   </div>
