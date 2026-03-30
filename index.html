@@ -1787,21 +1787,54 @@ if("serviceWorker" in navigator){
 
   const CODICI = ['113','213','235','135.1','135.2','212.1','212.2','112.1','112.2','211','236','412','422','132.1','132.2','232.1','232.2','4112','4212','4213','411.1','411.2','421.1','421.2','421.3','471','211MO'];
 
-  function classifyLine(line){
-    const up = line.toUpperCase().trim();
-    if(!up) return 'skip';
-    const hasKm = /\d{2,3}\+\d{2,3}/.test(up);
-    // Se ha un km → è una saldatura
-    if(hasKm){
-      if(/NO\s*DAC/.test(up)) return 'nodac';
-      for(const c of CODICI){
-        const esc = c.replace('.','\\.');
-        if(new RegExp('\\b'+esc+'\\b').test(up)) return 'diff';
-      }
-      return 'ok';
+  function hasKm(s){ return /\d{2,3}\+\d{2,3}/.test(s); }
+  function hasNoDac(s){ return /NO\s*DAC/i.test(s); }
+  function hasCodice(s){
+    const up = s.toUpperCase();
+    for(const c of CODICI){
+      const esc = c.replace(/\./g,'\\.');
+      if(new RegExp('\\b'+esc+'\\b').test(up)) return true;
     }
-    // Righe senza km → meta/contesto
-    return 'meta';
+    return false;
+  }
+
+  // Due passate: trova gruppi saldatura + figlie, colora il gruppo
+  function classifyAll(lines){
+    const results = new Array(lines.length).fill('meta');
+    // Passo 1: trova i gruppi (saldatura + righe figlie fino a riga vuota)
+    let groups = []; // [{start, end, weldLines:[indexes], childLines:[indexes]}]
+    let g = null;
+    for(let i=0; i<lines.length; i++){
+      const t = lines[i].trim();
+      if(!t){
+        results[i] = 'skip';
+        if(g){ groups.push(g); g = null; }
+        continue;
+      }
+      if(hasKm(t)){
+        if(!g) g = {weldLines:[], childLines:[]};
+        g.weldLines.push(i);
+      } else {
+        if(g) g.childLines.push(i);
+      }
+    }
+    if(g) groups.push(g);
+
+    // Passo 2: per ogni gruppo, determina il colore dalle righe saldatura + figlie
+    for(const grp of groups){
+      let cls = 'ok';
+      // Controlla tutte le righe del gruppo
+      const allIdx = [...grp.weldLines, ...grp.childLines];
+      for(const idx of allIdx){
+        const t = lines[idx].toUpperCase().trim();
+        if(hasNoDac(t)){ cls = 'nodac'; break; }
+        if(hasCodice(t)){ cls = 'diff'; break; }
+      }
+      // Applica il colore alle righe saldatura
+      for(const idx of grp.weldLines) results[idx] = cls;
+      // Le righe figlie restano 'meta'
+    }
+    return results;
   }
 
   function renderPreview(){
@@ -1812,11 +1845,12 @@ if("serviceWorker" in navigator){
       return;
     }
     const lines = text.split('\n');
+    const classes = classifyAll(lines);
     let html = '';
     let cOk=0, cDiff=0, cNd=0, cSald=0;
-    for(const line of lines){
-      const cls = classifyLine(line);
-      const displayText = line.trim() || '&nbsp;';
+    for(let i=0; i<lines.length; i++){
+      const cls = classes[i];
+      const displayText = lines[i].trim() || '&nbsp;';
       if(cls==='ok') { cOk++; cSald++; }
       else if(cls==='diff') { cDiff++; cSald++; }
       else if(cls==='nodac') { cNd++; cSald++; }
