@@ -516,57 +516,45 @@ textarea::placeholder{color:var(--w3)}
 
   </div>
 
-  <!-- PANEL 1: RISULTATI -->
+  <!-- PANEL 1: RISULTATI (mockup screen2) -->
   <div class="tab-panel" id="panel-1">
 
-    <div class="risultati-hero" id="risultati-hero">
-      <div class="risultati-hero-top">
+    <!-- Stats + Progress unified card -->
+    <div class="card" id="risultati-hero">
+      <div class="risultati-hero-top" style="display:none">
         <div class="risultati-hero-title">Risultati</div>
         <span class="risultati-badge" id="risultati-badge">OK</span>
       </div>
-      <div class="stats-bar" style="margin-bottom:12px">
-        <div class="stat-card">
-          <div class="stat-value" id="s-tot">0</div><div class="stat-label">Totali</div>
+      <div class="stats-card">
+        <div class="stats">
+          <div class="stat tot"><div class="stat-val" id="s-tot">0</div><div class="stat-label">Totali</div></div>
+          <div class="stat ok"><div class="stat-val" id="s-ok">0</div><div class="stat-label">Conformi</div></div>
+          <div class="stat dif"><div class="stat-val" id="s-diff">0</div><div class="stat-label">Difetti</div></div>
+          <div class="stat nd"><div class="stat-val" id="s-nodac">0</div><div class="stat-label">No Dac</div></div>
         </div>
-        <div class="stat-card ok">
-          <div class="stat-value" id="s-ok">0</div><div class="stat-label">Conformi</div>
-        </div>
-        <div class="stat-card danger">
-          <div class="stat-value" id="s-diff">0</div><div class="stat-label">Difetti</div>
-        </div>
-        <div class="stat-card nodac">
-          <div class="stat-value" id="s-nodac">0</div><div class="stat-label">No Dac</div>
-        </div>
-      </div>
-      <div class="risultati-progress">
-        <div class="risultati-progress-fill" id="risultati-progress-fill" style="width:0%"></div>
-      </div>
-      <div class="risultati-progress-label">
-        <span id="risultati-conformi-label">0 conformi</span>
-        <span id="risultati-totale-label">0 totali</span>
+        <div class="progress risultati-progress"><div class="progress-fill risultati-progress-fill" id="risultati-progress-fill" style="width:0%"></div></div>
+        <div class="progress-labels risultati-progress-label"><span id="risultati-conformi-label">0 conformi</span><span id="risultati-totale-label">0 totali</span></div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-label">
-        <span>Dettaglio saldature</span>
-        <button class="slabel-action" id="btn-copia-tsv">Copia TSV</button>
-      </div>
-      <div class="result-list" id="result-list">
-        <div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-text">Nessuna saldatura elaborata.<br>Vai su Compila e premi Elabora.</div></div>
-      </div>
+    <!-- Dettaglio saldature -->
+    <div class="slabel">
+      <span>Dettaglio saldature</span>
+      <button class="slabel-action" id="btn-copia-tsv">Copia TSV</button>
+    </div>
+    <div class="result-list" id="result-list">
+      <div class="empty-state"><div class="empty-icon">—</div><div class="empty-text">Nessuna saldatura elaborata.<br>Vai su Compila e premi Elabora.</div></div>
     </div>
 
-    <div class="section">
-      <div class="section-label">Export Excel</div>
-      <div class="tsv-card">
-        <div class="tsv-header">
-          <span class="tsv-title">TSV &mdash; pronto per Excel <span class="tsv-count" id="tsv-count"></span></span>
-          <button class="copy-btn" onclick="document.getElementById('btn-copia-tsv').click()">Copia</button>
-        </div>
-        <pre class="tsv-preview" id="tsv-preview">&mdash;</pre>
+    <!-- TSV -->
+    <div class="card" style="margin-top:16px">
+      <div class="tsv-header">
+        <span class="tsv-title">Anteprima TSV <span class="tsv-count" id="tsv-count"></span></span>
+        <button class="slabel-action" onclick="document.getElementById('btn-copia-tsv').click()">Copia</button>
       </div>
+      <pre class="tsv-preview" id="tsv-preview">—</pre>
     </div>
+
   </div>
 
   <!-- PANEL 2: DIFETTI -->
